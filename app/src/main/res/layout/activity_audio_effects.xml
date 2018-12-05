@@ -11,9 +11,10 @@
         android:id="@+id/textView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_above="@+id/seekBar1"
-        android:layout_alignEnd="@+id/seekBar2"
-        android:layout_marginBottom="57dp"
+        android:layout_below="@+id/printHere"
+        android:layout_marginStart="17dp"
+        android:layout_marginTop="70dp"
+        android:layout_toEndOf="@+id/seekBar0"
         android:text="@string/equalizerHeader"
         android:textColor="@android:color/white"
         android:textSize="24sp" />
@@ -64,5 +65,25 @@
         android:layout_toEndOf="@+id/seekBar2"
         android:background="@android:color/white"
         android:rotation="270" />
+
+    <TextView
+        android:id="@+id/printHere"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_marginTop="58dp"
+        android:layout_toStartOf="@+id/seekBar4"
+        android:text="TextView"
+        android:textColor="@android:color/background_light" />
+
+    <Spinner
+        android:id="@+id/spinner"
+        android:layout_width="100dp"
+        android:layout_height="20dp"
+        android:layout_below="@+id/textView"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="20dp"
+        android:background="@android:color/background_light"
+        android:visibility="visible" />
 
 </RelativeLayout>

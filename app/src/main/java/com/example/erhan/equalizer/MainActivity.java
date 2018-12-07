@@ -41,7 +41,7 @@ public class MainActivity extends AppCompatActivity {
 
 
         final AudioManager amanager = (AudioManager)getSystemService(Context.AUDIO_SERVICE);
-
+        amanager.generateAudioSessionId();
         // create the MediaPlayer
         MediaPlayer mMediaPlayer = MediaPlayer.create(this,R.raw.test_song);
         mMediaPlayer.start();

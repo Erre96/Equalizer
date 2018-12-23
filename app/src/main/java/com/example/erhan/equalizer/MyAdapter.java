@@ -1,20 +1,32 @@
 package com.example.erhan.equalizer;
 
+import android.content.Context;
+import android.media.MediaPlayer;
+import android.net.Uri;
+import android.os.Environment;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import java.io.IOException;
+import java.util.List;
+
 /**
  * Created by Erhan on 2018-12-07.
  */
 public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
-    private String[] mDataset;
+    private List<String> mDataset;
+    private Context mContext;
+    private List<Uri> uri;
 
     // Provide a suitable constructor (depends on the kind of dataset)
-    public MyAdapter(String[] myDataset) {
+    public MyAdapter(List<String> myDataset, Context myContext, List <Uri> myUri)
+    {
         mDataset = myDataset;
+        mContext = myContext;
+        uri = myUri;
     }
 
 
@@ -24,14 +36,13 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
     public class ViewHolder extends RecyclerView.ViewHolder {
         // each data item is just a string in this case
         public TextView txtHeader;
-        public TextView txtFooter;
+        //public TextView txtFooter;
         public View layout;
 
         public ViewHolder(View v) {
             super(v);
             layout = v;
             txtHeader = v.findViewById(R.id.firstLine);
-            txtFooter = v.findViewById(R.id.secondLine);
         }
     }
 
@@ -51,16 +62,33 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
 
     // Replace the contents of a view (invoked by the layout manager)
     @Override
-    public void onBindViewHolder(ViewHolder holder, int position) {
+    public void onBindViewHolder(final ViewHolder holder, final int position) {
         // - get element from your dataset at this position
         // - replace the contents of the view with that element
-        holder.txtHeader.setText(mDataset[position]);
+        holder.txtHeader.setText(mDataset.get(position));
 
+        holder.layout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                try {
+                    MusicCollectionActivity.mediaPlayer.reset();
+                    MusicCollectionActivity.mediaPlayer = new MediaPlayer();
+                    MusicCollectionActivity.mediaPlayer.setDataSource(mContext,uri.get(position));
+                    MusicCollectionActivity.mediaPlayer.prepare();
+                    MusicCollectionActivity.mediaPlayer.start();
+                }
+
+                catch (IOException e)
+                {
+
+                }
+            }
+        });
     }
 
     // Return the size of your dataset (invoked by the layout manager)
     @Override
     public int getItemCount() {
-        return mDataset.length;
+        return mDataset.size();
     }
 }

@@ -1,115 +1,121 @@
 package com.example.erhan.equalizer;
 
 import android.Manifest;
-import android.content.ContentResolver;
+import android.app.Activity;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.pm.PackageManager;
-import android.database.Cursor;
+import android.media.MediaPlayer;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Environment;
-import android.provider.MediaStore;
+import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
-import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.view.View;
-import android.widget.Adapter;
-import android.widget.AdapterView;
+import android.webkit.PermissionRequest;
 import android.widget.ArrayAdapter;
-import android.widget.ListView;
 import android.widget.Toast;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
 
 public class MusicCollectionActivity extends AppCompatActivity {
-    final String MEDIA_PATH = Environment.getExternalStorageDirectory() .getPath() + "/";
-    private static final int MY_PERMISSION_REQUEST = 1;
-
-    private ListView listView;
-    ArrayAdapter adapter;
-    ArrayList arrayList;
-
+    private int STORAGE_PERMISSION_CODE = 1;
+    private RecyclerView mRecyclerView;
     private RecyclerView.Adapter mAdapter;
     private RecyclerView.LayoutManager mLayoutManager;
 
+    public static List <String> fileList = new ArrayList<>();
+    public static List <Uri> uri = new ArrayList<>();
+    public static MediaPlayer mediaPlayer = new MediaPlayer();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_music_collection);
+        mRecyclerView = (RecyclerView) findViewById(R.id.my_recycler_view);
 
         // use this setting to improve performance if you know that changes
         // in content do not change the layout size of the RecyclerView
-        //mRecyclerView.setHasFixedSize(true);
+        mRecyclerView.setHasFixedSize(true);
 
         // use a linear layout manager
-        //mLayoutManager = new LinearLayoutManager(this);
-        //mRecyclerView.setLayoutManager(mLayoutManager);
+        mLayoutManager = new LinearLayoutManager(this);
+        mRecyclerView.setLayoutManager(mLayoutManager);
+        //mMediaPlayer.start();
 
-        if(ContextCompat.checkSelfPermission(MusicCollectionActivity.this,
-                Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
-            if (ActivityCompat.shouldShowRequestPermissionRationale(MusicCollectionActivity.this,
-                    Manifest.permission.READ_EXTERNAL_STORAGE)) {
-                ActivityCompat.requestPermissions(MusicCollectionActivity.this,
-                        new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, MY_PERMISSION_REQUEST);
-            }
-        } else {
-            //doStuff();
+
+
+        RequestStoragePermission();
+        if(STORAGE_PERMISSION_CODE == 1)
+        {
+            File root = new File (Environment.getExternalStorageDirectory().getAbsolutePath()+"/Music");
+            ListDir(root);
         }
     }
+    public void ListDir(File f)
+    {
+        File[] files = f.listFiles();
+        fileList.clear();
+        for(File file : files)
+        {
+            fileList.add(file.getName());
+            uri.add(Uri.parse(Environment.getExternalStorageDirectory().getAbsolutePath()+"/Music/"+file.getName()));
+        }
 
-    public void doStuff() {
-        listView = findViewById(R.id.my_recycler_view);
-        arrayList = new ArrayList<>();
-        getMusic();
-        adapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1);
-        listView.setAdapter(adapter);
-
-        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-
-            }
-        });
+        mAdapter = new MyAdapter(fileList,this,uri);
+        mRecyclerView.setAdapter(mAdapter);
     }
 
-    public void getMusic(){
-        ContentResolver contentResolver = getContentResolver();
-        Uri songUri = MediaStore.Audio.Media.EXTERNAL_CONTENT_URI;
-        final Cursor songCursor = getContentResolver().query(null,null,null,null);
+    public boolean checkPermissionForReadExtertalStorage() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            int result = this.checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE);
+            return result == PackageManager.PERMISSION_GRANTED;
+        }
+        return false;
+    }
 
-        if(songCursor != null && songCursor.moveToFirst()) {
-            int songTitle = songCursor.getColumnIndex(MediaStore.Audio.Media.TITLE);
-            int songArtist = songCursor.getColumnIndex(MediaStore.Audio.Media.ARTIST);
-            int songLocation = songCursor.getColumnIndex(MediaStore.Audio.Media.DATA);
+    private void RequestStoragePermission ()
+    {
+        if(ActivityCompat.shouldShowRequestPermissionRationale(this,Manifest.permission.READ_EXTERNAL_STORAGE))
+        {
 
-            do {
-                String currentTitle = songCursor.getString(songTitle);
-                String currentArtist = songCursor.getString(songArtist);
-                String currentLocation = songCursor.getString(songLocation);
+            new AlertDialog.Builder(this)
+                    .setTitle("Permission needed")
+                    .setMessage("This permission is needed because ...")
+                    .setPositiveButton("ok", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            ActivityCompat.requestPermissions(MusicCollectionActivity.this, new String[] {Manifest.permission.READ_EXTERNAL_STORAGE}, STORAGE_PERMISSION_CODE);
+                        }
+                    })
+            .setNegativeButton("cancel", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    dialog.dismiss();
+                }
+            })
+            .create().show();
 
-                arrayList.add(currentTitle + "\n" + currentArtist + "\n"+"Artist : "+currentArtist + "\n"+"Location : "+currentLocation);
-            } while(songCursor.moveToNext());
+
+        } else {
+            ActivityCompat.requestPermissions(this, new String[] {Manifest.permission.READ_EXTERNAL_STORAGE}, STORAGE_PERMISSION_CODE);
         }
     }
 
     @Override
-    public void OnRequestPermissionResult(int requstCode, String[] permissions, int[] grantResults) {
-        switch (requstCode) {
-            case MY_PERMISSION_REQUEST: {
-                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    if (ContextCompat.checkSelfPermission(MusicCollectionActivity.this,
-                            Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
-                        Toast.makeText(this, "Permission granted!", Toast.LENGTH_SHORT).show();
-
-                        doStuff();
-                    }
-                } else {
-                    Toast.makeText(this, "No Permission granted!", Toast.LENGTH_SHORT).show();
-                    finish();
-                }
-                return;
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if (requestCode == STORAGE_PERMISSION_CODE) {
+            if(grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                Toast.makeText(this, "Permission GRANTED", Toast.LENGTH_SHORT);
+            } else {
+                Toast.makeText(this,"Permission DENIED", Toast.LENGTH_SHORT).show();
             }
         }
     }

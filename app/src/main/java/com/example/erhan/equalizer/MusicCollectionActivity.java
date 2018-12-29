@@ -4,6 +4,7 @@ import android.Manifest;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.media.MediaPlayer;
 import android.net.Uri;
@@ -15,6 +16,9 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.Toolbar;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.webkit.PermissionRequest;
 import android.widget.ArrayAdapter;
 import android.widget.Toast;
@@ -26,6 +30,7 @@ import java.util.List;
 
 public class MusicCollectionActivity extends AppCompatActivity {
     private int STORAGE_PERMISSION_CODE = 1;
+    private Toolbar toolbar;
     private RecyclerView mRecyclerView;
     private RecyclerView.Adapter mAdapter;
     private RecyclerView.LayoutManager mLayoutManager;
@@ -38,7 +43,14 @@ public class MusicCollectionActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_music_collection);
-        mRecyclerView = (RecyclerView) findViewById(R.id.my_recycler_view);
+
+
+
+        toolbar = findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+        getSupportActionBar().setTitle("Equalizer");
+
+        mRecyclerView = findViewById(R.id.my_recycler_view);
 
         // use this setting to improve performance if you know that changes
         // in content do not change the layout size of the RecyclerView
@@ -58,6 +70,23 @@ public class MusicCollectionActivity extends AppCompatActivity {
             ListDir(root);
         }
     }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu_main,menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int id = item.getItemId();
+        if(id == R.id.action_equalizer)
+        {
+            startActivity(new Intent(MusicCollectionActivity.this, MainActivity.class));
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
     public void ListDir(File f)
     {
         File[] files = f.listFiles();

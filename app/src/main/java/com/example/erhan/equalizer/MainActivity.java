@@ -11,6 +11,8 @@ import android.media.audiofx.Visualizer;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -18,36 +20,32 @@ import android.widget.SeekBar;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.widget.Toolbar;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
+    android.support.v7.widget.Toolbar toolbar;
+    final int MAX_SLIDERS = 5;
+    final SeekBar[] eqSlider = new SeekBar[MAX_SLIDERS];
+    // create the equalizer with default priority of 0 & attach to our media player
+    final Equalizer mEqualizer = new Equalizer(99,MusicCollectionActivity.mediaPlayer.getAudioSessionId());
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_audio_effects);
 
-        final int MAX_SLIDERS = 5;
-        final SeekBar[] eqSlider;
-        eqSlider = new SeekBar[MAX_SLIDERS];
+        toolbar = findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+        getSupportActionBar().setTitle("Equalizer");
+
+
         Resources res = getResources();
         final Spinner presetChoises = (Spinner) findViewById(R.id.spinner);
 
-        Log.d("Hej","hej");
-        // set the device's volume control to control the audio stream we'll be playing
-        //SetvolumeControlStream(AudioManager.STREAM_MUSIC);
-
-
-        final AudioManager amanager = (AudioManager)getSystemService(Context.AUDIO_SERVICE);
-        amanager.generateAudioSessionId();
-        // create the MediaPlayer
-        MediaPlayer mMediaPlayer = MediaPlayer.create(this,R.raw.test_song);
-        mMediaPlayer.start();
-        // create the equalizer with default priority of 0 & attach to our media player
-         final Equalizer mEqualizer = new Equalizer(99,mMediaPlayer.getAudioSessionId());
-         mEqualizer.setEnabled((true));
+        mEqualizer.setEnabled((true));
 
         final List<String> categories = new ArrayList<String>();
 
@@ -71,11 +69,14 @@ public class MainActivity extends AppCompatActivity {
                 short index = (short) id;
                 mEqualizer.usePreset(index);
 
+                int bandLevel = 0;
                 for(short curBand = 0; curBand < MAX_SLIDERS; curBand++)
                 {
                     final SeekBar sk = eqSlider[curBand];
-                    sk.setProgress(mEqualizer.getBandLevel(curBand));
-                    UpdateSlider(sk, curBand, mEqualizer);
+                    bandLevel = mEqualizer.getBandLevel(curBand);
+
+                    int seekBarValue = convertToSeekBarValue(bandLevel);
+                    sk.setProgress(seekBarValue);
                 }
             }
 
@@ -108,7 +109,11 @@ public class MainActivity extends AppCompatActivity {
                 @Override
                 public void onStopTrackingTouch(SeekBar seekBar) {
                     // TODO Auto-generated method stub
-                    UpdateSlider(sk,curBand, mEqualizer);
+                    int bandLevel = (short) sk.getProgress();
+                    bandLevel = convertToBandLevel(bandLevel);
+
+
+                    mEqualizer.setBandLevel(curBand,(short) bandLevel);
                 }
 
                 @Override
@@ -144,6 +149,22 @@ public class MainActivity extends AppCompatActivity {
         });*/
     }
 
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu_main,menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int id = item.getItemId();
+        if(id == R.id.action_Player)
+        {
+            startActivity(new Intent(MainActivity.this, MusicCollectionActivity.class));
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
     void UpdateSlider(SeekBar sk, short curBand, Equalizer mEqualizer)
     {
         final TextView printHere = (TextView) findViewById(R.id.printHere);
@@ -155,5 +176,39 @@ public class MainActivity extends AppCompatActivity {
         mEqualizer.setBandLevel(curBand,level);
         String a = String.valueOf(level);
         printHere.setText(a);
+    }
+
+    void showBandStrength(int bandLevel, int seekBarValue)
+    {
+        final TextView printHere = findViewById(R.id.printHere);
+        String a = String.valueOf("Band Level : "+bandLevel+"    "+"\n"+"SeekBar Value : "+seekBarValue);
+        printHere.setText(a);
+    }
+
+    int convertToSeekBarValue(int bandLevel)
+    {
+        int ret = 50 + (bandLevel / 30);
+        showBandStrength(bandLevel,ret);
+        return ret;
+    }
+
+    int convertToBandLevel(int seekBarValue)
+    {
+        int ret = -1500 + (seekBarValue * 30);
+        showBandStrength(ret,seekBarValue);
+        return ret;
+    }
+
+    void updateSeekbars()
+    {
+        int bandLevel = 0;
+        for(short curBand = 0; curBand < MAX_SLIDERS; curBand++)
+        {
+            final SeekBar sk = eqSlider[curBand];
+            bandLevel = mEqualizer.getBandLevel(curBand);
+
+            int seekBarValue = convertToSeekBarValue(bandLevel);
+            sk.setProgress(seekBarValue);
+        }
     }
 }

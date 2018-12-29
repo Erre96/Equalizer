@@ -4,17 +4,21 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@android:color/holo_blue_bright"
+    android:background="@color/colorPrimary"
     tools:context="com.example.erhan.equalizer.MainActivity">
+
+    <include
+        android:id="@+id/toolbar"
+        layout="@layout/toolbar"
+        />
 
     <TextView
         android:id="@+id/textView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_alignStart="@+id/spinner"
         android:layout_below="@+id/printHere"
-        android:layout_marginStart="17dp"
-        android:layout_marginTop="70dp"
-        android:layout_toEndOf="@+id/seekBar0"
+        android:layout_marginTop="72dp"
         android:text="@string/equalizerHeader"
         android:textColor="@android:color/white"
         android:textSize="24sp" />
@@ -80,9 +84,10 @@
         android:id="@+id/spinner"
         android:layout_width="100dp"
         android:layout_height="20dp"
+        android:layout_alignEnd="@+id/seekBar3"
         android:layout_below="@+id/textView"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="20dp"
+        android:layout_marginEnd="24dp"
+        android:layout_marginTop="45dp"
         android:background="@android:color/background_light"
         android:visibility="visible" />
 

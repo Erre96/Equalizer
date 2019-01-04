@@ -39,9 +39,8 @@ public class MainActivity extends AppCompatActivity {
 
         toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-
-
-        toolbar.setTitle(MusicCollectionActivity.curSong);
+        getSupportActionBar().setTitle("Equalizer");
+        getSupportActionBar().setTitle(MusicCollectionActivity.curSong);
         Resources res = getResources();
         final Spinner presetChoises = (Spinner) findViewById(R.id.spinner);
 
@@ -186,6 +185,7 @@ public class MainActivity extends AppCompatActivity {
     {
         final TextView printHere = findViewById(R.id.printHere);
         String a = String.valueOf("Band Level : "+bandLevel+"    "+"\n"+"SeekBar Value : "+seekBarValue);
+        a = "";
         printHere.setText(a);
     }
 

@@ -37,14 +37,14 @@ public class MusicCollectionActivity extends AppCompatActivity {
 
     public static List <String> fileList = new ArrayList<>();
     public static List <Uri> uri = new ArrayList<>();
-    public static MediaPlayer mediaPlayer = new MediaPlayer();
+    final public static MediaPlayer mediaPlayer = new MediaPlayer();
     public static String curSong = "";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_music_collection);
-        
+
         toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setTitle(curSong);

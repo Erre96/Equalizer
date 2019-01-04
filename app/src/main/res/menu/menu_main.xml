@@ -4,15 +4,24 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <item
+        android:id="@+id/action_Player"
+        android:orderInCategory="100"
+        android:title="Music Player"
+        app:showAsAction="never" />
+
+    <item
         android:id="@+id/action_equalizer"
         android:orderInCategory="100"
         android:title="Equalizer"
         app:showAsAction="never" />
 
+
     <item
-        android:id="@+id/action_Player"
+        android:id="@+id/play_button"
+        android:icon="@drawable/ic_pause_action"
+        android:title="Play"
         android:orderInCategory="100"
-        android:title="Music Player"
-        app:showAsAction="never" />
+        app:showAsAction="ifRoom" />
+        />
 
 </menu>

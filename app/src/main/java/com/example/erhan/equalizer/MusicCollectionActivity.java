@@ -30,7 +30,7 @@ import java.util.List;
 
 public class MusicCollectionActivity extends AppCompatActivity {
     private int STORAGE_PERMISSION_CODE = 1;
-    private Toolbar toolbar;
+    public static Toolbar toolbar;
     private RecyclerView mRecyclerView;
     private RecyclerView.Adapter mAdapter;
     private RecyclerView.LayoutManager mLayoutManager;
@@ -38,17 +38,16 @@ public class MusicCollectionActivity extends AppCompatActivity {
     public static List <String> fileList = new ArrayList<>();
     public static List <Uri> uri = new ArrayList<>();
     public static MediaPlayer mediaPlayer = new MediaPlayer();
+    public static String curSong = "";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_music_collection);
-
-
-
+        
         toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        getSupportActionBar().setTitle("Equalizer");
+        getSupportActionBar().setTitle(curSong);
 
         mRecyclerView = findViewById(R.id.my_recycler_view);
 
@@ -84,6 +83,22 @@ public class MusicCollectionActivity extends AppCompatActivity {
         {
             startActivity(new Intent(MusicCollectionActivity.this, MainActivity.class));
         }
+
+        if(id == R.id.play_button)
+        {
+            if(!mediaPlayer.isPlaying())
+            {
+                mediaPlayer.start();
+                item.setIcon(R.drawable.ic_pause_action);
+            }
+            else
+            if(mediaPlayer.isPlaying())
+            {
+                mediaPlayer.pause();
+                item.setIcon(R.drawable.play_action);
+            }
+        }
+
         return super.onOptionsItemSelected(item);
     }
 

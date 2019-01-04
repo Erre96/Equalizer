@@ -30,7 +30,7 @@ public class MainActivity extends AppCompatActivity {
     final int MAX_SLIDERS = 5;
     final SeekBar[] eqSlider = new SeekBar[MAX_SLIDERS];
     // create the equalizer with default priority of 0 & attach to our media player
-    final Equalizer mEqualizer = new Equalizer(99,MusicCollectionActivity.mediaPlayer.getAudioSessionId());
+    final static public Equalizer mEqualizer = new Equalizer(99,MusicCollectionActivity.mediaPlayer.getAudioSessionId());
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -39,9 +39,9 @@ public class MainActivity extends AppCompatActivity {
 
         toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        getSupportActionBar().setTitle("Equalizer");
 
 
+        toolbar.setTitle(MusicCollectionActivity.curSong);
         Resources res = getResources();
         final Spinner presetChoises = (Spinner) findViewById(R.id.spinner);
 
@@ -124,7 +124,7 @@ public class MainActivity extends AppCompatActivity {
                 @Override
                 public void onProgressChanged(SeekBar seekBar, int progress,boolean fromUser) {
                     // TODO Auto-generated method stub
-                    sk.setBackgroundColor(Color.parseColor("#FF0000"));
+                    sk.setBackgroundColor(Color.parseColor("#ffffe0"));
                 }
             });
         }
@@ -162,20 +162,24 @@ public class MainActivity extends AppCompatActivity {
         {
             startActivity(new Intent(MainActivity.this, MusicCollectionActivity.class));
         }
+
+        if(id == R.id.play_button)
+        {
+            if(!MusicCollectionActivity.mediaPlayer.isPlaying())
+            {
+                MusicCollectionActivity.mediaPlayer.start();
+                item.setIcon(R.drawable.ic_pause_action);
+            }
+            else
+            if(MusicCollectionActivity.mediaPlayer.isPlaying())
+            {
+                MusicCollectionActivity.mediaPlayer.pause();
+                item.setIcon(R.drawable.play_action);
+            }
+        }
+
+
         return super.onOptionsItemSelected(item);
-    }
-
-    void UpdateSlider(SeekBar sk, short curBand, Equalizer mEqualizer)
-    {
-        final TextView printHere = (TextView) findViewById(R.id.printHere);
-
-        sk.setBackgroundColor(Color.parseColor("#825840"));
-        short level = (short) sk.getProgress();
-        level *= 15;
-
-        mEqualizer.setBandLevel(curBand,level);
-        String a = String.valueOf(level);
-        printHere.setText(a);
     }
 
     void showBandStrength(int bandLevel, int seekBarValue)

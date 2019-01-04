@@ -2,8 +2,10 @@ package com.example.erhan.equalizer;
 
 import android.content.Context;
 import android.media.MediaPlayer;
+import android.media.audiofx.Equalizer;
 import android.net.Uri;
 import android.os.Environment;
+import android.support.annotation.MainThread;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -71,11 +73,24 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
             @Override
             public void onClick(View view) {
                 try {
+
+                    //short[] bandLevels;
+                    //bandLevels = getBandLevels();
+
                     MusicCollectionActivity.mediaPlayer.reset();
                     MusicCollectionActivity.mediaPlayer = new MediaPlayer();
                     MusicCollectionActivity.mediaPlayer.setDataSource(mContext,uri.get(position));
                     MusicCollectionActivity.mediaPlayer.prepare();
                     MusicCollectionActivity.mediaPlayer.start();
+                    MusicCollectionActivity.curSong = holder.txtHeader.getText().toString();
+                    MusicCollectionActivity.toolbar.setTitle(MusicCollectionActivity.curSong);
+
+                    /*
+                    MainActivity.mEqualizer.setBandLevel((short) 0,bandLevels[0]);
+                    MainActivity.mEqualizer.setBandLevel((short) 1,bandLevels[1]);
+                    MainActivity.mEqualizer.setBandLevel((short) 2,bandLevels[2]);
+                    MainActivity.mEqualizer.setBandLevel((short) 3,bandLevels[3]);
+                    MainActivity.mEqualizer.setBandLevel((short) 4,bandLevels[4]);*/
                 }
 
                 catch (IOException e)
@@ -90,5 +105,16 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
     @Override
     public int getItemCount() {
         return mDataset.size();
+    }
+
+    short[] getBandLevels()
+    {
+        short[] bandLevel = new short[5];
+        //bandLevel[0] = MainActivity.mEqualizer.getBandLevel((short) 0);
+        //bandLevel[1] = MainActivity.mEqualizer.getBandLevel((short) 1);
+        //bandLevel[2] = MainActivity.mEqualizer.getBandLevel((short) 2);
+        //bandLevel[3] = MainActivity.mEqualizer.getBandLevel((short) 3);
+        //bandLevel[4] = MainActivity.mEqualizer.getBandLevel((short) 4);
+        return bandLevel;
     }
 }

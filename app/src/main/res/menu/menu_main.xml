@@ -21,7 +21,14 @@
         android:icon="@drawable/ic_pause_action"
         android:title="Play"
         android:orderInCategory="100"
-        app:showAsAction="ifRoom" />
-        />
+        app:showAsAction="always" />
+
+    <item
+        android:id="@+id/nextButton"
+        android:icon="@drawable/skip_action"
+        android:title="Next"
+        android:orderInCategory="100"
+        app:showAsAction="always" />
+
 
 </menu>

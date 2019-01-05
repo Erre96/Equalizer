@@ -3,6 +3,7 @@ package com.example.erhan.equalizer;
 import android.Manifest;
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -19,6 +20,7 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.webkit.PermissionRequest;
 import android.widget.ArrayAdapter;
 import android.widget.Toast;
@@ -39,6 +41,7 @@ public class MusicCollectionActivity extends AppCompatActivity {
     public static List <Uri> uri = new ArrayList<>();
     final public static MediaPlayer mediaPlayer = new MediaPlayer();
     public static String curSong = "";
+    public static int songIndex;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -48,6 +51,13 @@ public class MusicCollectionActivity extends AppCompatActivity {
         toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setTitle(curSong);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        toolbar.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(MusicCollectionActivity.this, TrackDetailsActivity.class));
+            }
+        });
 
         mRecyclerView = findViewById(R.id.my_recycler_view);
 
@@ -82,6 +92,11 @@ public class MusicCollectionActivity extends AppCompatActivity {
         if(id == R.id.action_equalizer)
         {
             startActivity(new Intent(MusicCollectionActivity.this, MainActivity.class));
+        }
+
+        if(id == R.id.nextButton)
+        {
+            goToNextTrack(getApplicationContext());
         }
 
         if(id == R.id.play_button)
@@ -161,6 +176,52 @@ public class MusicCollectionActivity extends AppCompatActivity {
             } else {
                 Toast.makeText(this,"Permission DENIED", Toast.LENGTH_SHORT).show();
             }
+        }
+    }
+
+
+
+    public static void goToNextTrack(Context context){
+        try {
+
+            if(songIndex + 1 < fileList.size())
+            {
+                mediaPlayer.reset();
+                mediaPlayer.setDataSource(context, uri.get(songIndex + 1));
+                mediaPlayer.prepare();
+                mediaPlayer.start();
+
+                curSong = fileList.get(songIndex+1);
+                songIndex = songIndex+1;
+                toolbar.setTitle(MusicCollectionActivity.curSong);
+            }
+        }
+
+        catch (IOException e)
+        {
+
+        }
+    }
+
+    public static void goToPreviousTrack(Context context){
+        try {
+
+            if(songIndex > 0)
+            {
+                mediaPlayer.reset();
+                mediaPlayer.setDataSource(context, uri.get(songIndex - 1));
+                mediaPlayer.prepare();
+                mediaPlayer.start();
+
+                curSong = fileList.get(songIndex-1);
+                songIndex = songIndex-1;
+                toolbar.setTitle(MusicCollectionActivity.curSong);
+            }
+        }
+
+        catch (IOException e)
+        {
+
         }
     }
 }

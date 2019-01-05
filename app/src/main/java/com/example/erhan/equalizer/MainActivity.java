@@ -31,16 +31,27 @@ public class MainActivity extends AppCompatActivity {
     final SeekBar[] eqSlider = new SeekBar[MAX_SLIDERS];
     // create the equalizer with default priority of 0 & attach to our media player
     final static public Equalizer mEqualizer = new Equalizer(99,MusicCollectionActivity.mediaPlayer.getAudioSessionId());
+    public static short[] bandLevels = new short[5];
+    static short curPreset = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_audio_effects);
+        setHelpText("");
 
         toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        getSupportActionBar().setTitle("Equalizer");
         getSupportActionBar().setTitle(MusicCollectionActivity.curSong);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        toolbar.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(MainActivity.this, TrackDetailsActivity.class));
+            }
+        });
+
+
         Resources res = getResources();
         final Spinner presetChoises = (Spinner) findViewById(R.id.spinner);
 
@@ -53,22 +64,31 @@ public class MainActivity extends AppCompatActivity {
             categories.add(mEqualizer.getPresetName(i));
 
         }
-            ArrayAdapter <String> dataAdapter = new ArrayAdapter<String>
+        categories.add("Custom");
+            final ArrayAdapter <String> dataAdapter = new ArrayAdapter<String>
                     (this, android.R.layout.simple_spinner_item, categories);
 
         dataAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 
         // attaching data adapter to spinner
         presetChoises.setAdapter(dataAdapter);
-
         dataAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 
+        presetChoises.setSelection(curPreset);
         presetChoises.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long id) {
                 short index = (short) id;
-                mEqualizer.usePreset(index);
 
-                int bandLevel = 0;
+                if(index != dataAdapter.getCount()-1)
+                {
+                    mEqualizer.usePreset(index);
+                }
+
+                curPreset = index;
+                //setHelpText(String.valueOf(curPreset));
+
+
+                int bandLevel;
                 for(short curBand = 0; curBand < MAX_SLIDERS; curBand++)
                 {
                     final SeekBar sk = eqSlider[curBand];
@@ -113,6 +133,10 @@ public class MainActivity extends AppCompatActivity {
 
 
                     mEqualizer.setBandLevel(curBand,(short) bandLevel);
+
+                    int last = dataAdapter.getCount()-1;
+                    curPreset = (short) last;
+                    presetChoises.setSelection(curPreset);
                 }
 
                 @Override
@@ -162,6 +186,11 @@ public class MainActivity extends AppCompatActivity {
             startActivity(new Intent(MainActivity.this, MusicCollectionActivity.class));
         }
 
+        if(id == R.id.nextButton)
+        {
+            MusicCollectionActivity.goToNextTrack(getApplicationContext());
+        }
+
         if(id == R.id.play_button)
         {
             if(!MusicCollectionActivity.mediaPlayer.isPlaying())
@@ -181,6 +210,11 @@ public class MainActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
+    void setHelpText(String text)
+    {
+        final TextView printHere = findViewById(R.id.printHere);
+        printHere.setText(text);
+    }
     void showBandStrength(int bandLevel, int seekBarValue)
     {
         final TextView printHere = findViewById(R.id.printHere);
@@ -192,14 +226,14 @@ public class MainActivity extends AppCompatActivity {
     int convertToSeekBarValue(int bandLevel)
     {
         int ret = 50 + (bandLevel / 30);
-        showBandStrength(bandLevel,ret);
+        //showBandStrength(bandLevel,ret);
         return ret;
     }
 
     int convertToBandLevel(int seekBarValue)
     {
         int ret = -1500 + (seekBarValue * 30);
-        showBandStrength(ret,seekBarValue);
+        //showBandStrength(ret,seekBarValue);
         return ret;
     }
 
@@ -214,5 +248,23 @@ public class MainActivity extends AppCompatActivity {
             int seekBarValue = convertToSeekBarValue(bandLevel);
             sk.setProgress(seekBarValue);
         }
+    }
+
+    public static void saveBandLevels()
+    {
+        bandLevels[0] = mEqualizer.getBandLevel((short) 0);
+        bandLevels[1] = mEqualizer.getBandLevel((short) 1);
+        bandLevels[2] = mEqualizer.getBandLevel((short) 2);
+        bandLevels[3] = mEqualizer.getBandLevel((short) 3);
+        bandLevels[4] = mEqualizer.getBandLevel((short) 4);
+    }
+
+    public static void setBandLevels()
+    {
+        mEqualizer.setBandLevel((short) 0, bandLevels[0]);
+        mEqualizer.setBandLevel((short) 1, bandLevels[1]);
+        mEqualizer.setBandLevel((short) 2, bandLevels[2]);
+        mEqualizer.setBandLevel((short) 3, bandLevels[3]);
+        mEqualizer.setBandLevel((short) 4, bandLevels[4]);
     }
 }

@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:design="http://schemas.android.com/tools"
+    android:background="@color/colorPrimary">
+
+    <!-- A RecyclerView with some commonly used attributes -->
+
+
+    <ImageView
+        android:id="@+id/imageView"
+        android:layout_width="200dp"
+        android:layout_height="200dp"
+        android:layout_above="@+id/track_slider"
+        android:layout_alignStart="@+id/track_slider"
+        android:layout_marginBottom="60dp"
+        app:srcCompat="@mipmap/ic_launcher_foreground" />
+
+    <ImageButton
+        android:id="@+id/play_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="70dp"
+        android:background="@android:color/transparent"
+        app:srcCompat="@drawable/play_action" />
+
+    <ImageButton
+        android:id="@+id/skip_next_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignTop="@+id/play_button"
+        android:layout_marginStart="26dp"
+        android:layout_toEndOf="@+id/play_button"
+        android:background="@android:color/transparent"
+        app:srcCompat="@drawable/skip_action" />
+
+    <ImageButton
+        android:id="@+id/skip_previous_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignTop="@+id/play_button"
+        android:layout_marginEnd="26dp"
+        android:layout_toStartOf="@+id/play_button"
+        android:background="@android:color/transparent"
+        app:srcCompat="@drawable/skip_previous_action" />
+
+    <SeekBar
+        android:id="@+id/track_slider"
+        style="@style/Widget.AppCompat.SeekBar"
+        android:layout_width="200dp"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/play_button"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="32dp" />
+
+    <TextView
+        android:id="@+id/curTime"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@+id/track_slider"
+        android:layout_marginEnd="6dp"
+        android:layout_toStartOf="@+id/track_slider"
+        android:text="TextView"
+        android:textColor="@android:color/background_light"
+        android:textSize="14sp" />
+
+    <TextView
+        android:id="@+id/totalTime"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignTop="@+id/track_slider"
+        android:layout_marginStart="29dp"
+        android:layout_toEndOf="@+id/track_slider"
+        android:text="TextView"
+        android:textColor="@android:color/background_light"
+        android:textSize="14sp" />
+
+    <TextView
+        android:id="@+id/titleText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="54dp"
+        android:text="TextView"
+        android:textColor="@android:color/background_light"
+        android:textSize="18sp" />
+
+    <TextView
+        android:id="@+id/artistText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/titleText"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="10dp"
+        android:text="TextView"
+        android:textColor="@android:color/background_light"
+        android:textSize="12sp" />
+
+</RelativeLayout>
